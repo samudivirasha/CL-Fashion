@@ -2,6 +2,7 @@ import 'package:cl_fashion/model/work.dart';
 import 'package:cl_fashion/service/database_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class HomeAdmin extends StatefulWidget {
   const HomeAdmin({super.key});
@@ -11,34 +12,16 @@ class HomeAdmin extends StatefulWidget {
 }
 
 class _HomeAdminState extends State<HomeAdmin> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Scrollable ListView Example',
-      home: Scaffold(
-        appBar: AppBar(title: Text('Orders')),
-        body: MyListView(),
-      ),
-    );
-  }
-}
 
-class MyListView extends StatelessWidget {
-  final List<String> items = List.generate(50, (index) => "Item ${index + 1}");
-  final DatabaseService _db = DatabaseService();
-
-  @override
-  Widget build(BuildContext context) {
-    // return ListView.builder(
-    //   itemCount: items.length,
-    //   itemBuilder: (context, index) {
-    //     return ListTile(
-    //       leading: Icon(Icons.list),
-    //       title: Text(items[index]),
-    //     );
-    //   },
-    // );
-   return StreamBuilder<List<WorkModel>>(
+   final DatabaseService _db = DatabaseService();
+    return Scaffold(
+      appBar: AppBar(),
+      body: Center(
+        child: Column(
+          children: [
+            Row(
+              children: [
+                 StreamBuilder<List<WorkModel>>(
      stream: _db.getWorks(),
      builder: (context, snapshot) {
        if (snapshot.hasError) {
@@ -145,12 +128,88 @@ class MyListView extends StatelessWidget {
         ),
       ],
     ),
-  ),
-);
-
-         },
-       );
-     },
-   );
+  ),);
+                SizedBox(
+                  width: 40.w,
+                  child: Form(
+                      child: Column(
+                    children: [
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Name',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ),
+                      TextFormField(
+                        decoration:
+                            const InputDecoration(labelText: 'Measurement'),
+                      ),
+                      DropdownButtonFormField(
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'high',
+                            child: Text('High'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'medium',
+                            child: Text('Medium'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'low',
+                            child: Text('Low'),
+                          ),
+                        ],
+                        onChanged: (value) {},
+                        decoration:
+                            const InputDecoration(labelText: 'Priority'),
+                      ),
+                      // status dropdown
+                      DropdownButtonFormField(
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'pending',
+                            child: Text('Pending'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'inprogress',
+                            child: Text('In Progress'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'completed',
+                            child: Text('Completed'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'problem',
+                            child: Text('Deliverd'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'problem',
+                            child: Text('Problem'),
+                          ),
+                        ],
+                        onChanged: (value) {},
+                        decoration: const InputDecoration(labelText: 'Status'),
+                      ),
+                      TextFormField(
+                        decoration:
+                            const InputDecoration(labelText: 'Description'),
+                      ),
+                    ],
+                  )),
+                ),
+                Container(
+                  width: 40.w,
+                )
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
+
