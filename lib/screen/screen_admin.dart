@@ -3,7 +3,6 @@ import 'package:cl_fashion/service/database_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-
 class HomeAdmin extends StatefulWidget {
   const HomeAdmin({super.key});
 
@@ -12,13 +11,15 @@ class HomeAdmin extends StatefulWidget {
 }
 
 class _HomeAdminState extends State<HomeAdmin> {
-
-   final DatabaseService _db = DatabaseService();
-    return Scaffold(
+  @override
+  Widget build(BuildContext context) {
+     return 
+    Scaffold(
       appBar: AppBar(),
       body: Center(
         child: Column(
           children: [
+
             Row(
               children: [
                  StreamBuilder<List<WorkModel>>(
@@ -126,9 +127,9 @@ class _HomeAdminState extends State<HomeAdmin> {
           work.description,
           style: TextStyle(color: Colors.grey[700]),
         ),
-      ],
-    ),
-  ),);
+   
+  
+                
                 SizedBox(
                   width: 40.w,
                   child: Form(
@@ -201,15 +202,18 @@ class _HomeAdminState extends State<HomeAdmin> {
                     ],
                   )),
                 ),
-                Container(
-                  width: 40.w,
-                )
+                
               ],
-            ),
+                  ))))
           ],
         ),
       ),
     );
+  
+
+
   }
 }
 
+  
+   
