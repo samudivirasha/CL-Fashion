@@ -12,123 +12,17 @@ class HomeAdmin extends StatefulWidget {
 }
 
 class _HomeAdminState extends State<HomeAdmin> {
-
-   final DatabaseService _db = DatabaseService();
+  DatabaseService _db = DatabaseService();
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: Center(
         child: Column(
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                 StreamBuilder<List<WorkModel>>(
-     stream: _db.getWorks(),
-     builder: (context, snapshot) {
-       if (snapshot.hasError) {
-         print('Error: ${snapshot.error}');
-         return Center(child: Text('Error: ${snapshot.error}'));
-       }
-   
-       if (snapshot.connectionState == ConnectionState.waiting) {
-         return Center(child: CircularProgressIndicator());
-       }
-   
-       final works = snapshot.data;
-   
-       if (works == null || works.isEmpty) {
-         return Center(child: Text('No orders yet!'));
-       }
-   
-       return ListView.builder(
-         itemCount: works.length,
-         itemBuilder: (context, index) {
-           final work = works[index];
-          return Card(
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(12),
-  ),
-  elevation: 4,
-  margin: EdgeInsets.all(12),
-  child: Padding(
-    padding: const EdgeInsets.all(16),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          work.name,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: 8),
-
-        Row(
-          children: [
-            Icon(Icons.calendar_today, size: 16),
-            SizedBox(width: 6),
-            Text("Order Date: ${work.orderDate.toLocal().toString().split(' ')[0]}"),
-          ],
-        ),
-        SizedBox(height: 4),
-
-        Row(
-          children: [
-            Icon(Icons.event_available, size: 16),
-            SizedBox(width: 6),
-            Text("End Date: ${work.endDate.toLocal().toString().split(' ')[0]}"),
-          ],
-        ),
-        SizedBox(height: 8),
-
-        Row(
-          children: [
-            Icon(Icons.assignment_ind, size: 16),
-            SizedBox(width: 6),
-            Text("Assigned To: ${work.assingedTo.name}"),
-          ],
-        ),
-        SizedBox(height: 4),
-
-        Row(
-          children: [
-            Icon(Icons.person_outline, size: 16),
-            SizedBox(width: 6),
-            Text("Created By: ${work.user.name}"),
-          ],
-        ),
-        SizedBox(height: 8),
-
-        Row(
-          children: [
-            Icon(Icons.flag, size: 16),
-            SizedBox(width: 6),
-            Text("Priority: ${work.priority}"),
-          ],
-        ),
-        SizedBox(height: 4),
-
-        Row(
-          children: [
-            Icon(Icons.info_outline, size: 16),
-            SizedBox(width: 6),
-            Text("Status: ${work.status}"),
-          ],
-        ),
-        SizedBox(height: 12),
-
-        Text(
-          "Description:",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 4),
-        Text(
-          work.description,
-          style: TextStyle(color: Colors.grey[700]),
-        ),
-      ],
-    ),
-  ),);
                 SizedBox(
                   width: 40.w,
                   child: Form(
@@ -201,15 +95,130 @@ class _HomeAdminState extends State<HomeAdmin> {
                     ],
                   )),
                 ),
-                Container(
+                SizedBox(
                   width: 40.w,
-                )
+                  child: StreamBuilder<List<WorkModel>>(
+                      stream: _db.getWorks(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          print('Error: ${snapshot.error}');
+                          return Center(
+                              child: Text('Error: ${snapshot.error}'));
+                        }
+
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+
+                        final works = snapshot.data;
+
+                        if (works == null || works.isEmpty) {
+                          return Center(child: Text('No orders yet!'));
+                        }
+
+                        return SingleChildScrollView(
+                          child: SizedBox(
+                            height: 90.h, // Adjust this value as needed
+                            child: ListView.separated(
+                              itemCount: works.length,
+                              separatorBuilder: (context, index) =>
+                                  SizedBox(height: 8),
+                              itemBuilder: (context, index) {
+                                final work = works[index];
+                                return cardData(work);
+                              },
+                            ),
+                          ),
+                        );
+                      }),
+                ),
               ],
-            ),
+            )
           ],
         ),
       ),
     );
   }
-}
 
+  Card cardData(WorkModel work) {
+    return Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        elevation: 4,
+        margin: EdgeInsets.all(12),
+        child: Padding(
+            padding: const EdgeInsets.all(16),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(
+                work.name,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(Icons.calendar_today, size: 16),
+                  SizedBox(width: 6),
+                  Text(
+                      "Order Date: ${work.orderDate.toLocal().toString().split(' ')[0]}"),
+                ],
+              ),
+              SizedBox(height: 4),
+              Row(
+                children: [
+                  Icon(Icons.event_available, size: 16),
+                  SizedBox(width: 6),
+                  Text(
+                      "End Date: ${work.endDate.toLocal().toString().split(' ')[0]}"),
+                ],
+              ),
+              SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(Icons.assignment_ind, size: 16),
+                  SizedBox(width: 6),
+                  Text("Assigned To: ${work.assingedTo.name}"),
+                ],
+              ),
+              SizedBox(height: 4),
+              Row(
+                children: [
+                  Icon(Icons.person_outline, size: 16),
+                  SizedBox(width: 6),
+                  Text("Created By: ${work.user.name}"),
+                ],
+              ),
+              SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(Icons.flag, size: 16),
+                  SizedBox(width: 6),
+                  Text("Priority: ${work.priority}"),
+                ],
+              ),
+              SizedBox(height: 4),
+              Row(
+                children: [
+                  Icon(Icons.info_outline, size: 16),
+                  SizedBox(width: 6),
+                  Text("Status: ${work.status}"),
+                ],
+              ),
+              SizedBox(height: 12),
+              Text(
+                "Description:",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 4),
+              Text(
+                work.description,
+                style: TextStyle(color: Colors.grey[700]),
+              ),
+            ])));
+  }
+}
