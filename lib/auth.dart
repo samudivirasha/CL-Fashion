@@ -5,6 +5,8 @@ import 'package:cl_fashion/test.dart';
 
 import 'package:flutter/material.dart';
 
+import 'screen/screen_admin.dart';
+
 class AuthWrapper extends StatelessWidget {
   final AuthService _auth = AuthService();
 
@@ -15,11 +17,12 @@ class AuthWrapper extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
           final user = snapshot.data;
-          Test();
+          // Test();
           if (user == null) {
             return LoginScreen();
           } else {
-            return HomeScreen();
+            // print(user.email);
+            return const HomeAdmin();
           }
         }
         return Scaffold(body: Center(child: CircularProgressIndicator()));
