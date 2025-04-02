@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cl_fashion/model/user_model.dart';
 
 class WorkModel {
@@ -22,24 +23,40 @@ class WorkModel {
     required this.description,
     required this.priority,
   });
-  factory WorkModel.fromJson(Map<String, dynamic> json) {
+
+  factory WorkModel.fromDocument(DocumentSnapshot doc) {
+    final json = doc.data() as Map<String, dynamic>;
+
+
+     DateTime parseDate(dynamic value) {
+    if (value is Timestamp) {
+      return value.toDate();
+    } else if (value is String) {
+      return DateTime.parse(value);
+    } else {
+      throw Exception('Invalid date format');
+    }
+  }
+
     return WorkModel(
-      id: json['id'] as String?,
-      name: json['name'] as String,
-      orderDate: DateTime.parse(json['orderDate'] as String),
-      endDate: DateTime.parse(json['endDate'] as String),
-      status: json['status'] as String,
-      user: json['user'] as UserModel,
-      assingedTo: json['assingedTo'] as UserModel,
-      description: json['description'] as String,
-      priority: json['priority'] as String,
+      id: doc.id,
+      name: json['name'] ?? '',
+      orderDate: parseDate(json['orderDate']),
+    endDate: parseDate(json['endDate']),
+      status: json['status'] ?? '',
+      user: UserModel.fromJson(json['user'],json['user']['id'])
+,
+      assingedTo:  UserModel.fromJson(json['assingedTo'],json['assingedTo']['id']),
+      description: json['description'] ?? '',
+      priority: json['priority'] ?? '',
     );
   }
+
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'orderDate': orderDate.toIso8601String(),
-      'endDate': endDate.toIso8601String(),
+      'orderDate': Timestamp.fromDate(orderDate),
+      'endDate': Timestamp.fromDate(endDate),
       'status': status,
       'user': user.toJson(),
       'assingedTo': assingedTo.toJson(),
