@@ -34,10 +34,13 @@ class DatabaseService {
   }
 
   // Get work from Firestore
-  Stream<QuerySnapshot> getPosts() {
-    return _firestore
-        .collection('works')
-        .orderBy('timestamp', descending: true)
-        .snapshots();
-  }
+Stream<List<WorkModel>> getWorks() {
+  return _firestore
+      .collection('works')
+      .orderBy('orderDate', descending: true)
+      .snapshots()
+      .map((snapshot) =>
+          snapshot.docs.map((doc) => WorkModel.fromDocument(doc)).toList());
+}
+
 }

@@ -2,6 +2,7 @@ import 'package:cl_fashion/auth.dart';
 import 'package:cl_fashion/firebase_options.dart';
 import 'package:cl_fashion/screen/home.dart';
 import 'package:cl_fashion/screen/login.dart';
+import 'package:cl_fashion/screen/screen_admin.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => AuthWrapper(),
         '/login': (context) => LoginScreen(),
-        '/home': (context) => HomeScreen(),
+        '/home': (context) => HomeAdmin(),
       },
     );
   }
