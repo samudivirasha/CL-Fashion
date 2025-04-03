@@ -77,17 +77,17 @@ class Test {
         print("User not found");
         return;
       }
-      WorkModel work = WorkModel(
-        name: '',
-        orderDate: DateTime.now(),
-        endDate: DateTime.now().add(Duration(days: 7)),
-        status: 'pending',
-        user: user,
-        assingedTo: assingedTo ?? user,
-        description: '',
-        priority: 'pending',
-      );
-      await _db.addWork(work);
+      // WorkModel work = WorkModel(
+      //   name: '',
+      //   orderDate: DateTime.now(),
+      //   endDate: DateTime.now().add(Duration(days: 7)),
+      //   status: 'pending',
+      //   user: user,
+      //   assingedTo: assingedTo ?? user,
+      //   description: '',
+      //   priority: 'pending',
+      // );
+      // await _db.addWork(work);
     } catch (e) {
       print("Error adding work: $e");
     }

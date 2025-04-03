@@ -23,6 +23,18 @@ class DatabaseService {
     return null;
   }
 
+  Future<List<UserModel>> getUsersData() async {
+    QuerySnapshot querySnapshot = await _firestore.collection('users').get();
+
+    List<UserModel> usersList = [];
+
+    for (var doc in querySnapshot.docs) {
+      usersList
+          .add(UserModel.fromJson(doc.data() as Map<String, dynamic>, doc.id));
+    }
+    return usersList;
+  }
+
   // Add a work to Firestore
   Future<DocumentReference> addWork(WorkModel work) async {
     return await _firestore.collection('works').add(work.toJson());
@@ -34,13 +46,12 @@ class DatabaseService {
   }
 
   // Get work from Firestore
-Stream<List<WorkModel>> getWorks() {
-  return _firestore
-      .collection('works')
-      .orderBy('orderDate', descending: true)
-      .snapshots()
-      .map((snapshot) =>
-          snapshot.docs.map((doc) => WorkModel.fromDocument(doc)).toList());
-}
-
+  Stream<List<WorkModel>> getWorks() {
+    return _firestore
+        .collection('works')
+        .orderBy('orderDate', descending: true)
+        .snapshots()
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => WorkModel.fromDocument(doc)).toList());
+  }
 }
