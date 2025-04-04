@@ -6,6 +6,21 @@ class AuthService {
   // Auth state changes stream
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
+  // Register with email and password
+  Future<UserCredential?> createUserWithEmailAndPassword(
+    String email,
+    String password,
+  ) async {
+    try {
+      UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password);
+      return userCredential;
+    } on FirebaseAuthException catch (e) {
+      print('Failed to register: ${e.message}');
+      rethrow;
+    }
+  }
+
   // Sign in with email and password
   Future<UserCredential?> signInWithEmailAndPassword(
     String email,
@@ -19,21 +34,6 @@ class AuthService {
       return userCredential;
     } on FirebaseAuthException catch (e) {
       print('Failed to sign in: ${e.message}');
-      rethrow;
-    }
-  }
-
-  // Register with email and password
-  Future<UserCredential?> createUserWithEmailAndPassword(
-    String email,
-    String password,
-  ) async {
-    try {
-      UserCredential userCredential = await _auth
-          .createUserWithEmailAndPassword(email: email, password: password);
-      return userCredential;
-    } on FirebaseAuthException catch (e) {
-      print('Failed to register: ${e.message}');
       rethrow;
     }
   }
