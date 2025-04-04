@@ -56,12 +56,12 @@ class Test {
   Future<void> saveUserData() async {
     try {
       UserModel u = UserModel(
-        id: _auth.getCurrentUser()!.uid,
-        name: "Test User",
-        email: _auth.getCurrentUser()!.email ?? "",
-        phone: "1234567890",
-        address: "123 Test St, Test City, TC 12345",
-      );
+          id: _auth.getCurrentUser()!.uid,
+          name: "Test User",
+          email: _auth.getCurrentUser()!.email ?? "",
+          phone: "1234567890",
+          address: "123 Test St, Test City, TC 12345",
+          type: "admin");
       await _db.saveUserData(_auth.getCurrentUser()!.uid, u);
     } on Exception catch (e) {
       print("Error saving user data: $e");
@@ -77,17 +77,17 @@ class Test {
         print("User not found");
         return;
       }
-      WorkModel work = WorkModel(
-        name: '',
-        orderDate: DateTime.now(),
-        endDate: DateTime.now().add(Duration(days: 7)),
-        status: 'pending',
-        user: user,
-        assingedTo: assingedTo ?? user,
-        description: '',
-        priority: 'pending',
-      );
-      await _db.addWork(work);
+      // WorkModel work = WorkModel(
+      //   name: '',
+      //   orderDate: DateTime.now(),
+      //   endDate: DateTime.now().add(Duration(days: 7)),
+      //   status: 'pending',
+      //   user: user,
+      //   assingedTo: assingedTo ?? user,
+      //   description: '',
+      //   priority: 'pending',
+      // );
+      // await _db.addWork(work);
     } catch (e) {
       print("Error adding work: $e");
     }

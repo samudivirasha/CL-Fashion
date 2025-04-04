@@ -1,5 +1,10 @@
 import 'package:cl_fashion/model/work.dart';
 import 'package:cl_fashion/service/database_service.dart';
+import 'package:cl_fashion/utl/theme.dart';
+import 'package:cl_fashion/widgets/users/adduser.dart';
+import 'package:cl_fashion/widgets/users/uselist.dart';
+import 'package:cl_fashion/widgets/work/addwork.dart';
+import 'package:cl_fashion/widgets/work/worklist.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -12,213 +17,70 @@ class HomeAdmin extends StatefulWidget {
 }
 
 class _HomeAdminState extends State<HomeAdmin> {
-  DatabaseService _db = DatabaseService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      backgroundColor: primaryColor,
       body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          // crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              // crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(
                   width: 40.w,
-                  child: Form(
-                      child: Column(
-                    children: [
-                      TextFormField(
-                        decoration: const InputDecoration(
-                          labelText: 'Name',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
-                      TextFormField(
-                        decoration:
-                            const InputDecoration(labelText: 'Measurement'),
-                      ),
-                      DropdownButtonFormField(
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'high',
-                            child: Text('High'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'medium',
-                            child: Text('Medium'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'low',
-                            child: Text('Low'),
-                          ),
-                        ],
-                        onChanged: (value) {},
-                        decoration:
-                            const InputDecoration(labelText: 'Priority'),
-                      ),
-                      // status dropdown
-                      DropdownButtonFormField(
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'pending',
-                            child: Text('Pending'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'inprogress',
-                            child: Text('In Progress'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'completed',
-                            child: Text('Completed'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'problem',
-                            child: Text('Deliverd'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'problem',
-                            child: Text('Problem'),
-                          ),
-                        ],
-                        onChanged: (value) {},
-                        decoration: const InputDecoration(labelText: 'Status'),
-                      ),
-                      TextFormField(
-                        decoration:
-                            const InputDecoration(labelText: 'Description'),
-                      ),
-                    ],
-                  )),
+                  child: Center(child: Addwork()),
                 ),
-                SizedBox(
-                  width: 40.w,
-                  child: StreamBuilder<List<WorkModel>>(
-                      stream: _db.getWorks(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasError) {
-                          print('Error: ${snapshot.error}');
-                          return Center(
-                              child: Text('Error: ${snapshot.error}'));
-                        }
-
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
-                        }
-
-                        final works = snapshot.data;
-
-                        if (works == null || works.isEmpty) {
-                          return Center(child: Text('No orders yet!'));
-                        }
-
-                        return SingleChildScrollView(
-                          child: SizedBox(
-                            height: 90.h, // Adjust this value as needed
-                            child: ListView.separated(
-                              itemCount: works.length,
-                              separatorBuilder: (context, index) =>
-                                  SizedBox(height: 8),
-                              itemBuilder: (context, index) {
-                                final work = works[index];
-                                return cardData(work);
-                              },
-                            ),
-                          ),
-                        );
-                      }),
-                ),
+                SizedBox(width: 40.w, child: const WorkList()),
               ],
             )
           ],
         ),
       ),
-    );
-  }
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: primaryColor,
 
-  Card cardData(WorkModel work) {
-    return Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        elevation: 4,
-        margin: EdgeInsets.all(12),
-        child: Padding(
-            padding: const EdgeInsets.all(16),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(
-                work.name,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                content: SizedBox(
+                  width: 80.w,
+                  height: 600,
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 35.w,
+                          height: 500,
+                          child: const AddUser(),
+                        ),
+                        SizedBox(
+                          width: 35.w,
+                          height: 500,
+                          child: const UserList(),
+                        )
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-              SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(Icons.calendar_today, size: 16),
-                  SizedBox(width: 6),
-                  Text(
-                      "Order Date: ${work.orderDate.toLocal().toString().split(' ')[0]}"),
-                ],
-              ),
-              SizedBox(height: 4),
-              Row(
-                children: [
-                  Icon(Icons.event_available, size: 16),
-                  SizedBox(width: 6),
-                  Text(
-                      "End Date: ${work.endDate.toLocal().toString().split(' ')[0]}"),
-                ],
-              ),
-              SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(Icons.assignment_ind, size: 16),
-                  SizedBox(width: 6),
-                  Text("Assigned To: ${work.assingedTo.name}"),
-                ],
-              ),
-              SizedBox(height: 4),
-              Row(
-                children: [
-                  Icon(Icons.person_outline, size: 16),
-                  SizedBox(width: 6),
-                  Text("Created By: ${work.user.name}"),
-                ],
-              ),
-              SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(Icons.flag, size: 16),
-                  SizedBox(width: 6),
-                  Text("Priority: ${work.priority}"),
-                ],
-              ),
-              SizedBox(height: 4),
-              Row(
-                children: [
-                  Icon(Icons.info_outline, size: 16),
-                  SizedBox(width: 6),
-                  Text("Status: ${work.status}"),
-                ],
-              ),
-              SizedBox(height: 12),
-              Text(
-                "Description:",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 4),
-              Text(
-                work.description,
-                style: TextStyle(color: Colors.grey[700]),
-              ),
-            ])));
+                // Replace with your form widget
+              );
+            },
+          );
+        },
+        backgroundColor: secondaryColor,
+        child: Icon(
+          Icons.person_add,
+          color: textColor,
+        ),
+      ),
+    );
   }
 }
