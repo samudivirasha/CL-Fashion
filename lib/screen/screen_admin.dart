@@ -1,8 +1,10 @@
 import 'package:cl_fashion/model/work.dart';
 import 'package:cl_fashion/service/database_service.dart';
 import 'package:cl_fashion/utl/theme.dart';
-import 'package:cl_fashion/widgets/addwork.dart';
-import 'package:cl_fashion/widgets/worklist.dart';
+import 'package:cl_fashion/widgets/users/adduser.dart';
+import 'package:cl_fashion/widgets/users/uselist.dart';
+import 'package:cl_fashion/widgets/work/addwork.dart';
+import 'package:cl_fashion/widgets/work/worklist.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -36,6 +38,47 @@ class _HomeAdminState extends State<HomeAdmin> {
               ],
             )
           ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                backgroundColor: primaryColor,
+
+                content: SizedBox(
+                  width: 80.w,
+                  height: 600,
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 35.w,
+                          height: 500,
+                          child: const AddUser(),
+                        ),
+                        SizedBox(
+                          width: 35.w,
+                          height: 500,
+                          child: const UserList(),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                // Replace with your form widget
+              );
+            },
+          );
+        },
+        backgroundColor: secondaryColor,
+        child: Icon(
+          Icons.person_add,
+          color: textColor,
         ),
       ),
     );

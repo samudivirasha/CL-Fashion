@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 
 ThemeData theme = ThemeData(
   // add paddin to TextFormField
+
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      minimumSize: const Size(double.infinity, 50),
+      backgroundColor: Colors.blue,
+      foregroundColor: Colors.white, // Text color
+    ),
+  ),
+
   inputDecorationTheme: const InputDecorationTheme(
     suffixStyle: TextStyle(color: Colors.white),
     contentPadding: EdgeInsets.all(20),
