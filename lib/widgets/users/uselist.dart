@@ -1,11 +1,8 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cl_fashion/model/user_model.dart';
-import 'package:cl_fashion/model/work.dart';
 import 'package:cl_fashion/service/database_service.dart';
 import 'package:cl_fashion/utl/theme.dart';
 import 'package:cl_fashion/widgets/users/usercard.dart';
-import 'package:cl_fashion/widgets/work/updatework.dart';
-import 'package:cl_fashion/widgets/work/workcard.dart';
+import 'package:cl_fashion/widgets/users/updateuser.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
@@ -44,25 +41,24 @@ class UserList extends StatelessWidget {
                   final work = works[index];
                   return GestureDetector(
                     onTap: () {
-                      // print('Tapped on work: ${work.id}');
-                      // showDialog(
-                      //   context: context,
-                      //   builder: (BuildContext context) {
-                      //     return AlertDialog(
-                      //       backgroundColor: secondaryColor,
-                      //       content: Container(
-                      //         padding: const EdgeInsets.all(10),
-                      //         decoration: BoxDecoration(
-                      //           color: secondaryColor,
-                      //           borderRadius: BorderRadius.circular(12),
-                      //         ),
-                      //         width: 50.w,
-                      //         height: 600,
-                      //         // child: Center(child: Updatework(workmodel: work)),
-                      //       ),
-                      //     );
-                      //   },
-                      // );
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            backgroundColor: secondaryColor,
+                            content: Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: secondaryColor,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              width: 50.w,
+                              height: 600,
+                              child: Center(child: UpdateUser(userModel: work)),
+                            ),
+                          );
+                        },
+                      );
                     },
                     child: userData(work),
                   );

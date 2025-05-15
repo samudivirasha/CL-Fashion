@@ -28,6 +28,16 @@ class DatabaseService {
         snapshot.docs.map((doc) => UserModel.fromDocument(doc)).toList());
   }
 
+  // Update user in Firestore
+  Future<void> updateUser(UserModel user) async {
+    await _firestore.collection('users').doc(user.id).update(user.toJson());
+  }
+
+  // Delete user from Firestore
+  Future<void> deleteUser(String userId) async {
+    await _firestore.collection('users').doc(userId).delete();
+  }
+
   // Add a work to Firestore
   Future<DocumentReference> addWork(WorkModel work) async {
     return await _firestore.collection('works').add(work.toJson());

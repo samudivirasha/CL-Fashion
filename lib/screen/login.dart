@@ -19,8 +19,26 @@ class _LoginScreenState extends State<LoginScreen> {
       try {
         await _auth.signInWithEmailAndPassword(data.name, data.password);
         Navigator.pushReplacementNamed(context, '/home');
+        return null;
       } on FirebaseAuthException catch (e) {
-        return 'Password does not match';
+        if (e.code == 'user-not-found') {
+          return 'No user found with this email';
+        } else if (e.code == 'wrong-password') {
+          return 'Password does not match';
+        }
+        return 'An error occurred: ${e.message}';
+      }
+    }
+
+    Future<String?> _recoverPassword(String email) async {
+      try {
+        await _auth.resetPassword(email);
+        return null;
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found') {
+          return 'No user found with this email';
+        }
+        return 'An error occurred: ${e.message}';
       }
     }
 
@@ -28,9 +46,9 @@ class _LoginScreenState extends State<LoginScreen> {
       body: FlutterLogin(
         onLogin: _authUser,
         logo: 'assets/cl.png',
-        hideForgotPasswordButton: true,
+        hideForgotPasswordButton: false,
         title: "CL Fashion",
-        onRecoverPassword: (String) {},
+        onRecoverPassword: _recoverPassword,
         theme: LoginTheme(
           primaryColor: const Color.fromARGB(255, 38, 38, 38),
           titleStyle: const TextStyle(
