@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cl_fashion/model/user_model.dart';
+import 'package:cl_fashion/model/measurements.dart';
 
 class WorkModel {
   final String? id;
@@ -11,7 +12,9 @@ class WorkModel {
   final UserModel assingedTo;
   final String description;
   final String priority;
-  final String measurements;
+
+  // Measurements data
+  final Measurements measurements;
 
   WorkModel(
       {this.id,
@@ -38,6 +41,23 @@ class WorkModel {
       }
     }
 
+    // Create measurements from the nested map or individual fields
+    Measurements createMeasurements() {
+      if (json['measurements'] is Map) {
+        return Measurements.fromJson(json['measurements']);
+      } else {
+        // Backward compatibility for old data format
+        return Measurements(
+          bodyLength: (json['bodyLength'] ?? 0).toDouble(),
+          shoulder: (json['shoulder'] ?? 0).toDouble(),
+          sleeveLength: (json['sleeveLength'] ?? 0).toDouble(),
+          chest: (json['chest'] ?? 0).toDouble(),
+          waist: (json['waist'] ?? 0).toDouble(),
+          bottomWidth: (json['bottomWidth'] ?? 0).toDouble(),
+        );
+      }
+    }
+
     return WorkModel(
       id: doc.id,
       name: json['name'] ?? '',
@@ -49,7 +69,7 @@ class WorkModel {
           UserModel.fromJson(json['assingedTo'], json['assingedTo']['id']),
       description: json['description'] ?? '',
       priority: json['priority'] ?? '',
-      measurements: json['measurements'] ?? '',
+      measurements: createMeasurements(),
     );
   }
 
@@ -63,7 +83,7 @@ class WorkModel {
       'assingedTo': assingedTo.toJson(),
       'description': description,
       'priority': priority,
-      'measurements': measurements
+      'measurements': measurements.toJson(),
     };
   }
 }
