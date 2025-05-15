@@ -1,5 +1,6 @@
 import 'package:cl_fashion/model/user_model.dart';
 import 'package:cl_fashion/model/work.dart';
+import 'package:cl_fashion/model/measurements.dart';
 import 'package:cl_fashion/service/auth_service.dart';
 import 'package:cl_fashion/service/database_service.dart';
 import 'package:cl_fashion/utl/theme.dart';
@@ -21,8 +22,15 @@ class _AddworkState extends State<Addwork> {
 
   // Use controllers for persistent input
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _measurementController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+
+  // Measurement controllers
+  final TextEditingController _bodyLengthController = TextEditingController();
+  final TextEditingController _shoulderController = TextEditingController();
+  final TextEditingController _sleeveLengthController = TextEditingController();
+  final TextEditingController _chestController = TextEditingController();
+  final TextEditingController _waistController = TextEditingController();
+  final TextEditingController _bottomWidthController = TextEditingController();
 
   String _priority = 'medium';
   String _emp = '';
@@ -101,18 +109,112 @@ class _AddworkState extends State<Addwork> {
               }
             },
           ),
-          const SizedBox(height: 10),
-          TextFormField(
-            controller: _measurementController,
-            style: TextStyle(color: textColor),
-            decoration: const InputDecoration(
-              labelText: 'Measurement',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(12)),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Text(
+                "Measurements",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: textColor,
+                ),
               ),
-            ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  controller: _bodyLengthController,
+                  style: TextStyle(color: textColor),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Body Length',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: TextFormField(
+                  controller: _shoulderController,
+                  style: TextStyle(color: textColor),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Shoulder',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: TextFormField(
+                  controller: _sleeveLengthController,
+                  style: TextStyle(color: textColor),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Sleeve Length',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  controller: _chestController,
+                  style: TextStyle(color: textColor),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Chest',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: TextFormField(
+                  controller: _waistController,
+                  style: TextStyle(color: textColor),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Waist',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: TextFormField(
+                  controller: _bottomWidthController,
+                  style: TextStyle(color: textColor),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Bottom Width',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
           TextFormField(
             controller: _descriptionController,
             style: TextStyle(color: textColor),
@@ -195,6 +297,27 @@ class _AddworkState extends State<Addwork> {
                       .getUserData(authService.getCurrentUser()!.uid);
 
                   if (empdata != null && user != null) {
+                    // Parse measurement values
+                    double bodyLength =
+                        double.tryParse(_bodyLengthController.text) ?? 0;
+                    double shoulder =
+                        double.tryParse(_shoulderController.text) ?? 0;
+                    double sleeveLength =
+                        double.tryParse(_sleeveLengthController.text) ?? 0;
+                    double chest = double.tryParse(_chestController.text) ?? 0;
+                    double waist = double.tryParse(_waistController.text) ?? 0;
+                    double bottomWidth =
+                        double.tryParse(_bottomWidthController.text) ?? 0;
+
+                    // Create Measurements object
+                    final measurements = Measurements(
+                        bodyLength: bodyLength,
+                        shoulder: shoulder,
+                        sleeveLength: sleeveLength,
+                        chest: chest,
+                        waist: waist,
+                        bottomWidth: bottomWidth);
+
                     WorkModel wmodel = WorkModel(
                       name: _nameController.text,
                       orderDate: DateTime.now(),
@@ -204,38 +327,46 @@ class _AddworkState extends State<Addwork> {
                       assingedTo: empdata,
                       description: _descriptionController.text,
                       priority: _priority,
-                      measurements: _measurementController.text,
+                      measurements: measurements,
                     );
                     await databaseService.addWork(wmodel);
+
+                    // Clear the form fields after submission
+                    _nameController.clear();
+                    _bodyLengthController.clear();
+                    _shoulderController.clear();
+                    _sleeveLengthController.clear();
+                    _chestController.clear();
+                    _waistController.clear();
+                    _bottomWidthController.clear();
+                    _descriptionController.clear();
+
+                    setState(() {
+                      _emp = '';
+                      _priority = 'medium';
+                      formattedDate = "Select a date";
+                    });
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Work added successfully'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+
+                    // Navigator.pop(context);
                   }
-                  // Clear the form fields after submission
-                  _nameController.clear();
-                  _measurementController.clear();
-                  _descriptionController.clear();
-                  setState(() {
-                    _emp = '';
-                    _priority = 'medium';
-                    formattedDate = "Select a date";
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Work added successfully'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
                 } catch (e) {
                   print('Error: $e');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error: ${e.toString()}'),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
                 }
               }
             },
-            // style: ButtonStyle(
-            //   minimumSize: WidgetStateProperty.all(
-            //     Size(double.infinity, 50),
-            //   ),
-            //   backgroundColor: WidgetStateProperty.all(Colors.blue),
-            //   foregroundColor:
-            //       WidgetStateProperty.all(Colors.white), // Set text color
-            // ),
             child: const Text('Submit'),
           ),
         ],

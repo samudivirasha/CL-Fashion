@@ -1,5 +1,6 @@
 import 'package:cl_fashion/model/user_model.dart';
 import 'package:cl_fashion/model/work.dart';
+import 'package:cl_fashion/model/measurements.dart';
 import 'package:cl_fashion/service/auth_service.dart';
 import 'package:cl_fashion/service/database_service.dart';
 import 'package:cl_fashion/utl/theme.dart';
@@ -21,8 +22,15 @@ class _UpdateworkState extends State<Updatework> {
 
   // Use controllers for persistent input
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _measurementController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+
+  // Measurement controllers
+  final TextEditingController _bodyLengthController = TextEditingController();
+  final TextEditingController _shoulderController = TextEditingController();
+  final TextEditingController _sleeveLengthController = TextEditingController();
+  final TextEditingController _chestController = TextEditingController();
+  final TextEditingController _waistController = TextEditingController();
+  final TextEditingController _bottomWidthController = TextEditingController();
 
   String _priority = 'medium';
   String _emp = '';
@@ -57,8 +65,19 @@ class _UpdateworkState extends State<Updatework> {
 
     // Initialize text controllers
     _nameController.text = widget.workmodel.name;
-    _measurementController.text = widget.workmodel.measurements;
     _descriptionController.text = widget.workmodel.description;
+
+    // Initialize measurement controllers
+    _bodyLengthController.text =
+        widget.workmodel.measurements.bodyLength.toString();
+    _shoulderController.text =
+        widget.workmodel.measurements.shoulder.toString();
+    _sleeveLengthController.text =
+        widget.workmodel.measurements.sleeveLength.toString();
+    _chestController.text = widget.workmodel.measurements.chest.toString();
+    _waistController.text = widget.workmodel.measurements.waist.toString();
+    _bottomWidthController.text =
+        widget.workmodel.measurements.bottomWidth.toString();
   }
 
   @override
@@ -175,15 +194,105 @@ class _UpdateworkState extends State<Updatework> {
             },
           ),
           const SizedBox(height: 10),
-          TextFormField(
-            controller: _measurementController,
-            style: TextStyle(color: textColor),
-            decoration: const InputDecoration(
-              labelText: 'Measurement',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(12)),
-              ),
+          Text(
+            "Measurements",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: textColor,
             ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  controller: _bodyLengthController,
+                  style: TextStyle(color: textColor),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Body Length',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: TextFormField(
+                  controller: _shoulderController,
+                  style: TextStyle(color: textColor),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Shoulder',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: TextFormField(
+                  controller: _sleeveLengthController,
+                  style: TextStyle(color: textColor),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Sleeve Length',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  controller: _chestController,
+                  style: TextStyle(color: textColor),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Chest',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: TextFormField(
+                  controller: _waistController,
+                  style: TextStyle(color: textColor),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Waist',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: TextFormField(
+                  controller: _bottomWidthController,
+                  style: TextStyle(color: textColor),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Bottom Width',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 10),
           TextFormField(
@@ -268,23 +377,49 @@ class _UpdateworkState extends State<Updatework> {
                       .getUserData(authService.getCurrentUser()!.uid);
 
                   if (empdata != null && user != null) {
+                    // Parse measurement values
+                    double bodyLength =
+                        double.tryParse(_bodyLengthController.text) ?? 0;
+                    double shoulder =
+                        double.tryParse(_shoulderController.text) ?? 0;
+                    double sleeveLength =
+                        double.tryParse(_sleeveLengthController.text) ?? 0;
+                    double chest = double.tryParse(_chestController.text) ?? 0;
+                    double waist = double.tryParse(_waistController.text) ?? 0;
+                    double bottomWidth =
+                        double.tryParse(_bottomWidthController.text) ?? 0;
+
+                    // Create Measurements object
+                    final measurements = Measurements(
+                        bodyLength: bodyLength,
+                        shoulder: shoulder,
+                        sleeveLength: sleeveLength,
+                        chest: chest,
+                        waist: waist,
+                        bottomWidth: bottomWidth);
+
                     WorkModel wmodel = WorkModel(
                       id: widget.workmodel.id,
                       name: _nameController.text,
-                      orderDate: DateTime.now(),
+                      orderDate: widget.workmodel.orderDate,
                       endDate: DateTime.parse(formattedDate),
                       status: _status,
                       user: user,
                       assingedTo: empdata,
                       description: _descriptionController.text,
                       priority: _priority,
-                      measurements: _measurementController.text,
+                      measurements: measurements,
                     );
                     await databaseService.updateWork(wmodel);
                   }
                   // Clear the form fields after submission
                   _nameController.clear();
-                  _measurementController.clear();
+                  _bodyLengthController.clear();
+                  _shoulderController.clear();
+                  _sleeveLengthController.clear();
+                  _chestController.clear();
+                  _waistController.clear();
+                  _bottomWidthController.clear();
                   _descriptionController.clear();
                   setState(() {
                     _emp = '';

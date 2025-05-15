@@ -55,7 +55,7 @@ class WorkList extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               width: 50.w,
-                              height: 600,
+                              height: 700,
                               child: Center(child: Updatework(workmodel: work)),
                             ),
                           );
