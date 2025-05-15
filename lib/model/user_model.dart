@@ -22,7 +22,7 @@ class UserModel {
       email: json['email'] as String,
       phone: json['phone'] as String,
       address: json['address'] as String,
-      type: json['address'] as String,
+      type: json['type'] as String,
     );
   }
 

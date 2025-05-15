@@ -1,7 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cl_fashion/model/user_model.dart';
-import 'package:cl_fashion/model/work.dart';
-import 'package:cl_fashion/utl/changecolor.dart';
 import 'package:cl_fashion/utl/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -18,10 +16,22 @@ Card userData(UserModel user) {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AutoSizeText(
-              maxLines: 3,
-              user.id,
-              style: TextStyle(color: Colors.grey[700]),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: AutoSizeText(
+                    maxLines: 3,
+                    user.id,
+                    style: TextStyle(color: Colors.grey[700]),
+                  ),
+                ),
+                Icon(
+                  Icons.edit,
+                  color: textColor,
+                  size: 16,
+                ),
+              ],
             ),
             AutoSizeText(
               textAlign: TextAlign.left,
