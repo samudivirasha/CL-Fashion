@@ -40,6 +40,7 @@ class AuthService {
 
   // Sign out
   Future<void> signOut() async {
+    // Clear any cached user data if needed
     await _auth.signOut();
   }
 

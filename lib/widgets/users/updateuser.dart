@@ -20,7 +20,7 @@ class _UpdateUserState extends State<UpdateUser> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  
+
   String? _type;
   List<String> userTypes = ['admin', 'employee'];
 
@@ -30,12 +30,14 @@ class _UpdateUserState extends State<UpdateUser> {
 
     // Initialize fields with existing user data
     _type = widget.userModel.type;
-    
+
     // Debug
     print("Initial user type: $_type");
-    
+
     // If type is not in the list of valid types, set it to the first option
-    if (_type == null || (_type?.isEmpty ?? true) || !userTypes.contains(_type)) {
+    if (_type == null ||
+        (_type?.isEmpty ?? true) ||
+        !userTypes.contains(_type)) {
       _type = userTypes[0];
       print("Type reset to: $_type");
     }
@@ -96,7 +98,8 @@ class _UpdateUserState extends State<UpdateUser> {
                         backgroundColor: primaryColor,
                         title: const Text('Delete User',
                             style: TextStyle(color: Colors.red)),
-                        content: const Text('Are you sure you want to delete this user?'),
+                        content: const Text(
+                            'Are you sure you want to delete this user?'),
                         actions: [
                           TextButton(
                             onPressed: () {
@@ -107,7 +110,8 @@ class _UpdateUserState extends State<UpdateUser> {
                           TextButton(
                             onPressed: () async {
                               try {
-                                await databaseService.deleteUser(widget.userModel.id);
+                                await databaseService
+                                    .deleteUser(widget.userModel.id);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text('User deleted successfully'),
@@ -157,7 +161,8 @@ class _UpdateUserState extends State<UpdateUser> {
                 borderRadius: BorderRadius.all(Radius.circular(12)),
               ),
             ),
-            validator: (value) => value!.isEmpty ? 'Please enter an email' : null,
+            validator: (value) =>
+                value!.isEmpty ? 'Please enter an email' : null,
           ),
           const SizedBox(height: 10),
           TextFormField(
@@ -169,7 +174,8 @@ class _UpdateUserState extends State<UpdateUser> {
                 borderRadius: BorderRadius.all(Radius.circular(12)),
               ),
             ),
-            validator: (value) => value!.isEmpty ? 'Please enter a phone number' : null,
+            validator: (value) =>
+                value!.isEmpty ? 'Please enter a phone number' : null,
           ),
           const SizedBox(height: 10),
           TextFormField(
@@ -181,7 +187,8 @@ class _UpdateUserState extends State<UpdateUser> {
                 borderRadius: BorderRadius.all(Radius.circular(12)),
               ),
             ),
-            validator: (value) => value!.isEmpty ? 'Please enter an address' : null,
+            validator: (value) =>
+                value!.isEmpty ? 'Please enter an address' : null,
           ),
           const SizedBox(height: 10),
           DropdownButtonFormField<String>(
@@ -226,7 +233,7 @@ class _UpdateUserState extends State<UpdateUser> {
                   );
                   return;
                 }
-                
+
                 try {
                   UserModel updatedUser = UserModel(
                     id: widget.userModel.id,
@@ -234,11 +241,12 @@ class _UpdateUserState extends State<UpdateUser> {
                     email: _emailController.text,
                     phone: _phoneController.text,
                     address: _addressController.text,
-                    type: _type ?? 'employee', // Default to 'employee' if _type is null
+                    type: _type ??
+                        'employee', // Default to 'employee' if _type is null
                   );
-                  
+
                   await databaseService.updateUser(updatedUser);
-                  
+
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('User updated successfully'),

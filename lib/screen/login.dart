@@ -18,7 +18,9 @@ class _LoginScreenState extends State<LoginScreen> {
     Future<String?> _authUser(LoginData data) async {
       try {
         await _auth.signInWithEmailAndPassword(data.name, data.password);
-        Navigator.pushReplacementNamed(context, '/home');
+        // Clear the navigation stack and go to root route
+        // This ensures AuthWrapper will properly check the user role
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
         return null;
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {

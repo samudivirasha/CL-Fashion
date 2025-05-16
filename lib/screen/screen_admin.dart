@@ -1,3 +1,4 @@
+import 'package:cl_fashion/service/auth_service.dart';
 import 'package:cl_fashion/utl/theme.dart';
 import 'package:cl_fashion/widgets/users/adduser.dart';
 import 'package:cl_fashion/widgets/users/uselist.dart';
@@ -14,8 +15,30 @@ class HomeAdmin extends StatefulWidget {
 }
 
 class _HomeAdminState extends State<HomeAdmin> {
+  final AuthService _authService = AuthService();
+
+  void _handleLogout() async {
+    try {
+      await _authService.signOut();
+      if (mounted) {
+        // Navigate to login after sign out
+        Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error signing out: $e'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    print('HomeAdmin build method called');
     return Scaffold(
       backgroundColor: primaryColor,
       body: Center(
@@ -23,54 +46,22 @@ class _HomeAdminState extends State<HomeAdmin> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           // crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Employee management button
+            // Logout button
             Padding(
               padding: const EdgeInsets.only(top: 20.0, right: 20.0),
               child: Align(
                 alignment: Alignment.topRight,
-                child: ElevatedButton.icon(
-                  icon: Icon(Icons.people, color: textColor),
-                  label: Text('Manage Employees', style: TextStyle(color: textColor)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: secondaryColor,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: IconButton(
+                  icon: Icon(Icons.logout, color: textColor, size: 28),
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                    padding: const EdgeInsets.all(8),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          backgroundColor: primaryColor,
-                          title: Text('Employee Management', style: TextStyle(color: textColor)),
-                          content: SizedBox(
-                            width: 80.w,
-                            height: 600,
-                            child: Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 35.w,
-                                    height: 500,
-                                    child: const AddUser(),
-                                  ),
-                                  SizedBox(
-                                    width: 35.w,
-                                    height: 500,
-                                    child: const UserList(),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
+                  tooltip: 'Logout',
+                  onPressed: _handleLogout,
                 ),
               ),
             ),

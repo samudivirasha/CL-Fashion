@@ -2,7 +2,7 @@
 
 import 'package:cl_fashion/model/user_model.dart';
 import 'package:cl_fashion/model/work.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' show FirebaseFirestore, DocumentSnapshot, DocumentReference, GetOptions, Source;
 
 class DatabaseService {
   // Firestore reference
@@ -15,11 +15,22 @@ class DatabaseService {
 
   // Get user data from Firestore
   Future<UserModel?> getUserData(String uid) async {
-    DocumentSnapshot doc = await _firestore.collection('users').doc(uid).get();
-
-    if (doc.exists) {
-      return UserModel.fromJson(doc.data() as Map<String, dynamic>, uid);
+    try {
+      // Always fetch fresh data from the server
+      DocumentSnapshot doc = await _firestore
+          .collection('users')
+          .doc(uid)
+          .get(GetOptions(source: Source.server));
+      
+      print('User data fetched: ${doc.data()}');
+      if (doc.exists) {
+        return UserModel.fromJson(doc.data() as Map<String, dynamic>, uid);
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+      return null;
     }
+
     return null;
   }
 
@@ -57,6 +68,17 @@ class DatabaseService {
   Stream<List<WorkModel>> getWorks() {
     return _firestore
         .collection('works')
+        .orderBy('endDate', descending: false)
+        .snapshots()
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => WorkModel.fromDocument(doc)).toList());
+  }
+
+  // Get work assigned to a specific employee
+  Stream<List<WorkModel>> getEmployeeWorks(String employeeId) {
+    return _firestore
+        .collection('works')
+        .where('assingedTo.id', isEqualTo: employeeId)
         .orderBy('endDate', descending: false)
         .snapshots()
         .map((snapshot) =>
