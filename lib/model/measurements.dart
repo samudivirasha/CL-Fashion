@@ -15,7 +15,7 @@ class Measurements {
     required this.bottomWidth,
   });
 
-  // Create from JSON data (used when parsing from Firestore)
+  // Create from JSON data 
   factory Measurements.fromJson(Map<String, dynamic> json) {
     return Measurements(
       bodyLength: (json['bodyLength'] ?? 0).toDouble(),
@@ -27,7 +27,7 @@ class Measurements {
     );
   }
 
-  // Convert to JSON (used when saving to Firestore)
+  // Convert to JSON 
   Map<String, dynamic> toJson() {
     return {
       'bodyLength': bodyLength,
