@@ -7,6 +7,7 @@ import 'package:cl_fashion/utl/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Addwork extends StatefulWidget {
   Addwork({super.key});
@@ -23,6 +24,9 @@ class _AddworkState extends State<Addwork> {
   // Use controllers for persistent input
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+
+  // Add phone number controller
+  final TextEditingController _phoneNumberController = TextEditingController();
 
   // Measurement controllers
   final TextEditingController _bodyLengthController = TextEditingController();
@@ -108,6 +112,20 @@ class _AddworkState extends State<Addwork> {
                 );
               }
             },
+          ),
+          const SizedBox(height: 20),
+          TextFormField(
+            controller: _phoneNumberController,
+            style: TextStyle(color: textColor),
+            keyboardType: TextInputType.phone,
+            decoration: const InputDecoration(
+              labelText: 'Phone Number',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+              ),
+            ),
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Please enter a phone number' : null,
           ),
           const SizedBox(height: 20),
           Row(
@@ -327,12 +345,14 @@ class _AddworkState extends State<Addwork> {
                       assingedTo: empdata,
                       description: _descriptionController.text,
                       priority: _priority,
+                      phoneNumber: _phoneNumberController.text, // <-- Pass phone number
                       measurements: measurements,
                     );
                     await databaseService.addWork(wmodel);
 
                     // Clear the form fields after submission
                     _nameController.clear();
+                    _phoneNumberController.clear(); // <-- Clear phone number
                     _bodyLengthController.clear();
                     _shoulderController.clear();
                     _sleeveLengthController.clear();
@@ -378,3 +398,130 @@ class _AddworkState extends State<Addwork> {
     return Text(text, style: TextStyle(color: Colors.white));
   }
 }
+
+// Place this widget in your login screen file (not here), but here's the code for the Track Order dialog:
+class TrackOrderDialog extends StatefulWidget {
+  const TrackOrderDialog({super.key});
+
+  @override
+  State<TrackOrderDialog> createState() => _TrackOrderDialogState();
+}
+
+class _TrackOrderDialogState extends State<TrackOrderDialog> {
+  final TextEditingController _orderIdController = TextEditingController();
+  WorkModel? _work;
+  String? _error;
+  bool _loading = false;
+
+  Future<void> _fetchOrder() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+      _work = null;
+    });
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('works')
+          .doc(_orderIdController.text.trim())
+          .get();
+      if (doc.exists) {
+        setState(() {
+          _work = WorkModel.fromDocument(doc);
+        });
+      } else {
+        setState(() {
+          _error = "Order not found.";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _error = "Error: $e";
+      });
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: secondaryColor,
+      title: Text('Track Order', style: TextStyle(color: textColor)),
+      content: SizedBox(
+        width: 350,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _orderIdController,
+              style: TextStyle(color: textColor),
+              decoration: InputDecoration(
+                labelText: 'Order ID',
+                labelStyle: TextStyle(color: textColor),
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _loading ? null : _fetchOrder,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+              ),
+              child: _loading
+                  ? SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text('Check Status', style: TextStyle(color: textColor)),
+            ),
+            if (_error != null) ...[
+              const SizedBox(height: 12),
+              Text(_error!, style: TextStyle(color: Colors.red)),
+            ],
+            if (_work != null) ...[
+              const SizedBox(height: 20),
+              Divider(color: textColor),
+              Text('Order Status: ${_work!.status}',
+                  style: TextStyle(
+                      color: textColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18)),
+              const SizedBox(height: 10),
+              Text('Order Name: ${_work!.name}', style: TextStyle(color: textColor)),
+              Text('Customer: ${_work!.user.name}', style: TextStyle(color: textColor)),
+              Text('Phone: ${_work!.phoneNumber}', style: TextStyle(color: textColor)),
+              Text('Due Date: ${_work!.endDate.day}/${_work!.endDate.month}/${_work!.endDate.year}',
+                  style: TextStyle(color: textColor)),
+              const SizedBox(height: 10),
+              Text('Description:', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
+              Text(_work!.description, style: TextStyle(color: textColor)),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Close', style: TextStyle(color: textColor)),
+        ),
+      ],
+    );
+  }
+}
+
+// To use this dialog, add a button to your login screen like this:
+// ElevatedButton.icon(
+//   icon: Icon(Icons.search, color: textColor),
+//   label: Text('Track Order', style: TextStyle(color: textColor)),
+//   style: ElevatedButton.styleFrom(
+//     backgroundColor: secondaryColor,
+//     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+//   ),
+//   onPressed: () => showDialog(
+//     context: context,
+//     builder: (context) => const TrackOrderDialog(),
+//   ),
+// ),

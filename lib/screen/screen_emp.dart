@@ -127,6 +127,7 @@ class _EmployeeAddWorkState extends State<EmployeeAddWork> {
   // Use controllers for persistent input
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
 
   // Measurement controllers
   final TextEditingController _bodyLengthController = TextEditingController();
@@ -180,6 +181,21 @@ class _EmployeeAddWorkState extends State<EmployeeAddWork> {
               ),
             ),
             validator: (value) => value!.isEmpty ? 'Please enter a name' : null,
+          ),
+          const SizedBox(height: 20),
+          // Phone number field before measurements
+          TextFormField(
+            controller: _phoneNumberController,
+            style: TextStyle(color: textColor),
+            keyboardType: TextInputType.phone,
+            decoration: const InputDecoration(
+              labelText: 'Phone Number',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+              ),
+            ),
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Please enter a phone number' : null,
           ),
           const SizedBox(height: 20),
           Row(
@@ -395,16 +411,17 @@ class _EmployeeAddWorkState extends State<EmployeeAddWork> {
                           : DateTime.now().add(const Duration(days: 7)),
                       status: _status,
                       user: user,
-                      assingedTo:
-                          empdata, // Auto-assign to the current employee
+                      assingedTo: empdata,
                       description: _descriptionController.text,
                       priority: _priority,
+                      phoneNumber: _phoneNumberController.text,
                       measurements: measurements,
                     );
                     await databaseService.addWork(wmodel);
 
                     // Clear the form fields after submission
                     _nameController.clear();
+                    _phoneNumberController.clear();
                     _bodyLengthController.clear();
                     _shoulderController.clear();
                     _sleeveLengthController.clear();
@@ -703,6 +720,7 @@ class WorkDetailView extends StatelessWidget {
           // Work details
           buildDetailRow('Work Name', workmodel.name),
           buildDetailRow('Customer', workmodel.user.name),
+          buildDetailRow('Phone Number', workmodel.phoneNumber),
           buildDetailRow('Status', workmodel.status),
           buildDetailRow('Priority', workmodel.priority),
           buildDetailRow('Order Date', orderDate),
@@ -760,7 +778,6 @@ class WorkDetailView extends StatelessWidget {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // Implement status update functionality
                   final DatabaseService _db = DatabaseService();
                   String newStatus = workmodel.status == 'Pending'
                       ? 'In Progress'
@@ -776,6 +793,7 @@ class WorkDetailView extends StatelessWidget {
                     assingedTo: workmodel.assingedTo,
                     description: workmodel.description,
                     priority: workmodel.priority,
+                    phoneNumber: workmodel.phoneNumber,
                     measurements: workmodel.measurements,
                   );
 

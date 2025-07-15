@@ -52,6 +52,7 @@ class _UpdateTaskStatusState extends State<UpdateTaskStatus> {
         assingedTo: widget.work.assingedTo,
         description: widget.work.description,
         priority: widget.work.priority,
+        phoneNumber: widget.work.phoneNumber, // <-- Add this line
         measurements: widget.work.measurements,
       );
 

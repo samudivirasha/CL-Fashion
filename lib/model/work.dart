@@ -12,6 +12,7 @@ class WorkModel {
   final UserModel assingedTo;
   final String description;
   final String priority;
+  final String phoneNumber; 
 
   // Measurements data
   final Measurements measurements;
@@ -26,6 +27,7 @@ class WorkModel {
       required this.assingedTo,
       required this.description,
       required this.priority,
+      required this.phoneNumber, 
       required this.measurements});
 
   factory WorkModel.fromDocument(DocumentSnapshot doc) {
@@ -69,6 +71,7 @@ class WorkModel {
           UserModel.fromJson(json['assingedTo'], json['assingedTo']['id']),
       description: json['description'] ?? '',
       priority: json['priority'] ?? '',
+      phoneNumber: json['phoneNumber'] ?? '',
       measurements: createMeasurements(),
     );
   }
@@ -83,6 +86,7 @@ class WorkModel {
       'assingedTo': assingedTo.toJson(),
       'description': description,
       'priority': priority,
+      'phoneNumber': phoneNumber, 
       'measurements': measurements.toJson(),
     };
   }

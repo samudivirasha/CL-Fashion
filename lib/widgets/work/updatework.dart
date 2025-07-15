@@ -24,6 +24,9 @@ class _UpdateworkState extends State<Updatework> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
+  // Add phone number controller
+  final TextEditingController _phoneNumberController = TextEditingController();
+
   // Measurement controllers
   final TextEditingController _bodyLengthController = TextEditingController();
   final TextEditingController _shoulderController = TextEditingController();
@@ -60,24 +63,20 @@ class _UpdateworkState extends State<Updatework> {
     _priority = widget.workmodel.priority;
     _emp = widget.workmodel.assingedTo.id;
     _status = widget.workmodel.status;
-    formattedDate =
-        widget.workmodel.endDate.toString(); // Adjust formatting if needed
+    formattedDate = widget.workmodel.endDate.toString();
 
     // Initialize text controllers
     _nameController.text = widget.workmodel.name;
     _descriptionController.text = widget.workmodel.description;
+    _phoneNumberController.text = widget.workmodel.phoneNumber; // <-- Add this
 
     // Initialize measurement controllers
-    _bodyLengthController.text =
-        widget.workmodel.measurements.bodyLength.toString();
-    _shoulderController.text =
-        widget.workmodel.measurements.shoulder.toString();
-    _sleeveLengthController.text =
-        widget.workmodel.measurements.sleeveLength.toString();
+    _bodyLengthController.text = widget.workmodel.measurements.bodyLength.toString();
+    _shoulderController.text = widget.workmodel.measurements.shoulder.toString();
+    _sleeveLengthController.text = widget.workmodel.measurements.sleeveLength.toString();
     _chestController.text = widget.workmodel.measurements.chest.toString();
     _waistController.text = widget.workmodel.measurements.waist.toString();
-    _bottomWidthController.text =
-        widget.workmodel.measurements.bottomWidth.toString();
+    _bottomWidthController.text = widget.workmodel.measurements.bottomWidth.toString();
   }
 
   @override
@@ -192,6 +191,20 @@ class _UpdateworkState extends State<Updatework> {
                 );
               }
             },
+          ),
+          const SizedBox(height: 10),
+          TextFormField(
+            controller: _phoneNumberController,
+            style: TextStyle(color: textColor),
+            keyboardType: TextInputType.phone,
+            decoration: const InputDecoration(
+              labelText: 'Phone Number',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+              ),
+            ),
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Please enter a phone number' : null,
           ),
           const SizedBox(height: 10),
           Text(
@@ -378,16 +391,12 @@ class _UpdateworkState extends State<Updatework> {
 
                   if (empdata != null && user != null) {
                     // Parse measurement values
-                    double bodyLength =
-                        double.tryParse(_bodyLengthController.text) ?? 0;
-                    double shoulder =
-                        double.tryParse(_shoulderController.text) ?? 0;
-                    double sleeveLength =
-                        double.tryParse(_sleeveLengthController.text) ?? 0;
+                    double bodyLength = double.tryParse(_bodyLengthController.text) ?? 0;
+                    double shoulder = double.tryParse(_shoulderController.text) ?? 0;
+                    double sleeveLength = double.tryParse(_sleeveLengthController.text) ?? 0;
                     double chest = double.tryParse(_chestController.text) ?? 0;
                     double waist = double.tryParse(_waistController.text) ?? 0;
-                    double bottomWidth =
-                        double.tryParse(_bottomWidthController.text) ?? 0;
+                    double bottomWidth = double.tryParse(_bottomWidthController.text) ?? 0;
 
                     // Create Measurements object
                     final measurements = Measurements(
@@ -408,12 +417,14 @@ class _UpdateworkState extends State<Updatework> {
                       assingedTo: empdata,
                       description: _descriptionController.text,
                       priority: _priority,
+                      phoneNumber: _phoneNumberController.text, // <-- Add this
                       measurements: measurements,
                     );
                     await databaseService.updateWork(wmodel);
                   }
                   // Clear the form fields after submission
                   _nameController.clear();
+                  _phoneNumberController.clear(); // <-- Add this
                   _bodyLengthController.clear();
                   _shoulderController.clear();
                   _sleeveLengthController.clear();
